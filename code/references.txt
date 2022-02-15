@@ -1,0 +1,7 @@
+REFERENCES:
+===========
+https://hyperledger-fabric.readthedocs.io/en/release-2.2/whatis.html#hyperledger-fabric
+https://developer.ibm.com/components/hyperledger-fabric/tutorials/
+https://github.com/hyperledger/fabric-samples
+
+
