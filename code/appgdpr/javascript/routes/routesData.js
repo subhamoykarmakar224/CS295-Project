@@ -1,14 +1,35 @@
 const express = require('express')
 const router = express.Router()
+const {
+    getSieveLogsByUser,
+    addSieveLogs
+} = require('../utils/UtilsData')
 
-
-// 
-router.get('/logs', async (req, res, next) => {
-    if(is_valid_admin) {
-        res.send('TODO: SHOW LOGS')
+// add sieve logs
+router.post('/addsievelog/:uname', async (req, res, next) => {
+    data = JSON.stringify(req.body)
+    const result = await addSieveLogs(
+        req.params.uname, 
+        data["id"],
+        data["data"]
+        )
+    if(result) {
+        res.send(result)
     } else {
-        res.send('ERROR: NOT A VALID USER')
+        res.send(result)
     }
 })
+
+
+// get all logs of a user
+router.get('/all/:uname', async (req, res, next) => {
+    const logs = await getSieveLogsByUser(req.params.uname)
+    if(logs) {
+        res.send(logs)
+    } else {
+        res.send(logs)
+    }
+})
+
 
 module.exports = router

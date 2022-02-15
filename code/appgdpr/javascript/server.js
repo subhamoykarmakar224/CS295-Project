@@ -1,11 +1,15 @@
 const express = require('express')
 const app = express()
 const routesAdmin = require('./routes/routesAdmin')
+const routesData = require('./routes/routesData')
 const { registerDefaultAdmin } = require('./utils/UtilsAdmin')
 
 
+app.use(express.json())
+
 // ========= ADMIN =========
 app.use('/admin', routesAdmin)
+app.use('/log', routesData)
 
 
 // ========= USER =========
