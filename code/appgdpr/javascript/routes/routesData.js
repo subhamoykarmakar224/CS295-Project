@@ -7,7 +7,7 @@ const {
 
 // add sieve logs
 router.post('/addsievelog/:uname', async (req, res, next) => {
-    data = JSON.stringify(req.body)
+    data = req.body
     const result = await addSieveLogs(
         req.params.uname, 
         data["id"],
