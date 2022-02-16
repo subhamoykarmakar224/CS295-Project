@@ -12,73 +12,92 @@ class FabCar extends Contract {
         // return shim.success();
         const logs = [
             {
+                id:"",
                 owner: "subhamoy",
                 docType: 'sieve_log',
-                id: "1",
-                log: "test-1"
+                data: "test-1"
             },
             {
+                id:"",
                 owner: "subhamoy",
                 docType: 'sieve_log',
-                id: "2",
-                log: "test-2"
+                data: "test-2"
             },
             {
+                id:"",
                 owner: "subhamoy",
                 docType: 'sieve_log',
-                id: "3",
-                log: "test-3"
+                data: "test-3"
             },
             {
+                id:"",
                 owner: "subhamoy",
                 docType: 'sieve_log',
-                id: "4",
-                log: "test-4"
+                data: "test-4"
             },
             {
+                id:"",
                 owner: "subhamoy",
                 docType: 'sieve_log',
-                id: "5",
-                log: "test-5"
+                data: "test-5"
             }
         ]
         for (let i = 0; i < logs.length; i++) {
-            await ctx.stub.putState('LOG' + i, Buffer.from(JSON.stringify(logs[i])));
+            var id = 'log-' + i.toString();
+            logs[i].id = id
+            await ctx.stub.putState(id, Buffer.from(JSON.stringify(logs[i])));
             console.info('Added <--> ', logs[i]);
         }
+        return shim.success(Buffer.from('Initialized Successful.'));
     }
 
     // ============== SIEVE LOGS ==============
-    async createSieveLogs(ctx, user, id, data) {
-        var k = String(Date.now())
-        console.log('Curr KEY: ' + k)
+    async createSieveLogs(ctx, user, r_id, log_data) {
         const log = {
+            id: r_id, 
             owner: user.toLowerCase(),
             docType: 'sieve_log',
-            id: id, 
-            log: data
+            data: log_data
         }
-        await ctx.stub.putState(k, Buffer.from(log));
+        await ctx.stub.putState(r_id, Buffer.from(JSON.stringify(log)));
     }
 
-    async querySieveLogsByUser(ctx, user, pageSize, bookmark) {
-        const queryString = "{\"selector\":{\"docType\":\"sieve_log\",\"owner\":\"" + user + "\"}}";
+    // async querySieveLogsByUser(ctx, user, pageSize, bookmark) {
+    async querySieveLogsByUser(ctx) {
+        const startKey = '';
+        const endKey = '';
         const allResults = [];
-        // for await (const {key, value} of ctx.stub.getQueryResultWithPagination(queryString, pageSize, bookmark)) {
-            for await (const {key, value} of ctx.stub.getStateByRange('', '')) {
-            if(value.type == 'sieve_log') {
-                const strValue = Buffer.from(value);
-                let record;
-                try {
-                    record = JSON.parse(strValue);
-                } catch (err) {
-                    console.log(err);
-                    record = strValue;
-                }
-                allResults.push({ Key: key, Record: record });
+        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
             }
+            allResults.push({ Key: key, Record: record });
         }
+        console.info(allResults);
         return JSON.stringify(allResults);
+
+        // const queryString = "{\"selector\":{\"docType\":\"sieve_log\",\"owner\":\"" + user + "\"}}";
+        // const allResults = [];
+        // // for await (const {key, value} of ctx.stub.getQueryResultWithPagination(queryString, pageSize, bookmark)) {
+        //     for await (const {key, value} of ctx.stub.getStateByRange('', '')) {
+        //     if(value.type == 'sieve_log') {
+        //         const strValue = Buffer.from(value);
+        //         let record;
+        //         try {
+        //             record = JSON.parse(strValue);
+        //         } catch (err) {
+        //             console.log(err);
+        //             record = strValue;
+        //         }
+        //         allResults.push({ Key: key, Record: record });
+        //     }
+        // }
+        // return JSON.stringify(allResults);
     }
 
     // ============== DB LOGS ==============
