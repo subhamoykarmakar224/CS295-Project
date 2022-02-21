@@ -5,16 +5,17 @@ const {
 } = require('../utils/UtilsData')
 const {prod} = require('../kafkaSieve/sieveProduce')
 const {consom} = require('../kafkaSieve/sieveConsume')
+const kafka = require('kafka-node')
 
 router.get("/mget_obj", async (req, res) => {
     data = req.body
     id = data.id
     prop = data.prop
     info = data.info
-    console.log("id: " + id + " prop: " + prop + " info: " + info)
-    await prod(id, prop, info)
-    await consom()
-    res.status(200).send({message:"good"})
+    client = new kafka.KafkaClient()
+    await prod(client, id, prop, info)
+    const sol = await consom(client)
+    res.status(200).send({message: sol.msg, data: sol.data})
 
 })
 

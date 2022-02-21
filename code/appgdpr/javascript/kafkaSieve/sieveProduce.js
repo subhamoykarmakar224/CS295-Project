@@ -1,16 +1,15 @@
 var kafka = require('kafka-node')
-Producer = kafka.Producer
 
 
-const prod = async (id, prop, info) => {
-    client = new kafka.KafkaClient()
+
+const prod = async (client, id, prop, info) => {
+    Producer = kafka.Producer
     producer = new Producer(client)
     qr = {
         id: id,
         prop: prop,
         info: info
     }
-    console.log('in prod')
     payloads = [
         { topic: 'query', messages: JSON.stringify(qr) }
     ];
@@ -18,7 +17,6 @@ const prod = async (id, prop, info) => {
     const producerPromise = new Promise((resolve, reject) => {
       producer.on('ready', () => {
         producer.send(payloads, (err, data) => {
-            console.log(data);
             resolve(data);
         });
       });
@@ -27,16 +25,13 @@ const prod = async (id, prop, info) => {
         reject(err);
       })
     })
-    console.log('heehee')
     await producerPromise;
     const closePromise = new Promise((resolve, reject) => {
         producer.close(() => {
-            console.log('done prod')
             resolve('done prod')
         })
     })
     await closePromise
-    console.log('heehee2')
    
   }
 
