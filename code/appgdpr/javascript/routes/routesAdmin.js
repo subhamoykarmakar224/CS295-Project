@@ -15,6 +15,7 @@ router.get('/isvalid/:adminname', async (req, res, next) => {
     }
 })
 
+// use this first to create user
 router.get('/adduser/:admin/:user', async (req, res) => {
     const admin = req.params.admin
     const user = req.params.user
