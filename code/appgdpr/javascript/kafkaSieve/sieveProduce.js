@@ -2,14 +2,15 @@ var kafka = require('kafka-node')
 
 
 
-const prod = async (client, id, prop, info, query) => {
+const prod = async (client, id, prop, info, query, updateKey) => {
     Producer = kafka.Producer
     producer = new Producer(client)
     qr = {
         id: id,
         prop: prop,
         info: info,
-        query: query
+        query: query,
+        updateKey: updateKey
     }
     payloads = [
         { topic: 'query', messages: JSON.stringify(qr) }
