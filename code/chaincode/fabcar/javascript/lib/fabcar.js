@@ -59,7 +59,10 @@ class FabCar extends Contract {
             docType: 'sieve_log',
             data: log_data
         }
-        await ctx.stub.putState(r_id, Buffer.from(JSON.stringify(log)));
+        const d = new Date();
+        const key = Math.round( d.valueOf() / 1000 );
+        console.log(r_id, key)
+        await ctx.stub.putState(key.toString(), Buffer.from(JSON.stringify(log)));
     }
 
     // async querySieveLogsByUser(ctx, user, pageSize, bookmark) {
