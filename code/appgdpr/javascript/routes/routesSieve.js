@@ -7,6 +7,25 @@ const {prod} = require('../kafkaSieve/sieveProduce')
 const {consom} = require('../kafkaSieve/sieveConsume')
 const kafka = require('kafka-node')
 
+const buff = []
+
+router.put("/data", async (req, res) => {
+    console.log('data called push')
+    buff.push({message: 'succ'})
+    await res.status(200).send({message: "push"})
+})
+
+router.get("/dude", async (req, res) => {
+    bl = true
+    while (bl) {
+        if (buff.length > 0) {
+            bl = false
+        }
+        console.log(bl)
+    }
+    res.status(200).send(buff)
+})
+
 router.post("/mget_obj", async (req, res) => {
     data = req.body
     id = data.id
