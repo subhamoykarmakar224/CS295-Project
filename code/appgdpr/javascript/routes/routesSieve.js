@@ -75,16 +75,17 @@ router.post("/mget_obj", async (req, res) => {
     })
 })
 
-router.get('/mget_entry/:id', async (req, res) => {
-    const id = req.params.id
+router.get('/mget_entry/:device_id/:id', async (req, res) => {
+    const entry = req.params.id
+    const device_id = req.params.device_id
     prop = "id"
-    info = id
+    info = entry
     query = "mget_entry"
     updateKey = ""
-    qid = "mget_entry" + id + Date.now()
+    qid = "mget_entry" + device_id + Date.now()
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey, qid)
-    get_data(100, id, qid).then((result) => {
+    await prod(client, device_id, prop, info, query, updateKey, qid)
+    get_data(100, device_id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
         res.status(500).send({msg: "Ruh roh"});

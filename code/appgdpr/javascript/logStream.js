@@ -19,6 +19,7 @@ const consom = async (client) => {
     console.log('listening to logResults')
     consumer.on('message', async function (message) {
         const logM = JSON.parse(message.value);
+        console.log(logM)
         const result = await addSieveLogs("admin", logM.querier, logM.log)
         if(result.success) {
             console.log('yay')
