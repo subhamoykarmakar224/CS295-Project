@@ -81,15 +81,14 @@ router.get('/mget_entry/:id', async (req, res) => {
     info = id
     query = "mget_entry"
     updateKey = ""
+    qid = "mget_entry" + id + Date.now()
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey)
-    const sol = await consom(client)
-    const result = await addSieveLogs("admin", id, JSON.stringify({ prop: "id", info: id, query: "mget_entry" }))
-    if (result) {
-        res.status(200).send({ message: sol.msg, data: sol.data })
-    } else {
-        res.status(500).send({ message: "Unable to perform request at this time" })
-    }
+    await prod(client, id, prop, info, query, updateKey, qid)
+    get_data(100, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
 })
 
 router.put('/mmodify_obj/:key', async (req, res) => {
