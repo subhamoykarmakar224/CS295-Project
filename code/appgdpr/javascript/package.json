@@ -10,7 +10,8 @@
         "lint": "eslint .",
         "pretest": "npm run lint",
         "test": "nyc mocha --recursive",
-        "dev": "nodemon server.js"
+        "dev": "nodemon server.js",
+        "log": "nodemon logStream.js"
     },
     "engineStrict": true,
     "author": "Hyperledger",

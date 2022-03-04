@@ -11,18 +11,18 @@ const buff = []
 
 const get_data = function (limit, uid, qid, callback) {
     var i = 0
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         var get_data = setInterval(function () {
             console.log('Loop: ' + i);
             var result = {}
             if (i === limit - 1) {
                 clearInterval(get_data)
-                resolve(result)
+                reject(result)
             }
             for (var j = 0; j < buff.length; j++) {
                 if (buff[j].uid == uid && buff[j].qid == qid) {
                     result = {
-                        'result': buff[j].result,
+                        'result': buff[j].mallData,
                         'timestamp': buff[j].timestamp
                     }
                     clearInterval(get_data)
@@ -31,28 +31,29 @@ const get_data = function (limit, uid, qid, callback) {
                 }
             }
             i++;
-        }, 1000)
+        }, 100)
     });
 }
 
-router.put("/data", async (req, res) => {
+router.post("/data", async (req, res) => {
     buff.push({
         uid: req.body.uid,
         qid: req.body.qid,
-        query: req.body.query, result: 'res_' + req.body.uid + '_' + req.body.q1,
+        msg: req.body.msg,
+        mallData: req.body.md,
+        metaData: req.body.metaData,
         timestamp: Date.now()
     })
-    res.status(200).send({ buffer: buff })
+    res.status(200).send()
 })
 
 router.get("/dude", (req, res) => {
     uid = req.headers.uid
     qid = req.headers.qid
 
-    get_data(20, uid, qid)
-        .then((result) => {
-            res.status(200).send(result)
-        })
+    get_data(20, uid, qid).then((result) => {
+        res.status(200).send(result)
+    })
 })
 
 router.post("/mget_obj", async (req, res) => {
@@ -61,18 +62,17 @@ router.post("/mget_obj", async (req, res) => {
     prop = data.prop
     info = data.info
     query = data.query
+    qid = "mget_obj" + id + Date.now()
     updateKey = ""
-    console.log(data)
     // const result = addSieveLogs("admin", data.id, JSON.stringify(data))
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey)
-    const sol = await consom(client)
-
-    if (sol.data) {
-        res.status(200).send({ message: sol.msg, data: sol.data })
-    } else {
-        res.status(500).send({ message: "Unable to perform request at this time" })
-    }
+    await prod(client, id, prop, info, query, updateKey, qid)
+    // const sol = await consom(client)
+    get_data(100, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
 })
 
 router.get('/mget_entry/:id', async (req, res) => {
