@@ -14,6 +14,7 @@ const get_data = function (limit, uid, qid, callback) {
     return new Promise(function (resolve, reject) {
         var get_data = setInterval(function () {
             console.log('Loop: ' + i);
+            // console.log(buff.length)
             var result = {}
             if (i === limit - 1) {
                 clearInterval(get_data)
@@ -25,13 +26,14 @@ const get_data = function (limit, uid, qid, callback) {
                         'result': buff[j].mallData,
                         'timestamp': buff[j].timestamp
                     }
+                    buff.splice(j, 1)
                     clearInterval(get_data)
                     resolve(result)
                     break
                 }
             }
             i++;
-        }, 100)
+        }, 10)
     });
 }
 
@@ -51,7 +53,7 @@ router.get("/dude", (req, res) => {
     uid = req.headers.uid
     qid = req.headers.qid
 
-    get_data(20, uid, qid).then((result) => {
+    get_data(1000, uid, qid).then((result) => {
         res.status(200).send(result)
     })
 })
@@ -68,7 +70,7 @@ router.post("/mget_obj", async (req, res) => {
     client = new kafka.KafkaClient()
     await prod(client, id, prop, info, query, updateKey, qid)
     // const sol = await consom(client)
-    get_data(100, id, qid).then((result) => {
+    get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
         res.status(500).send({msg: "Ruh roh"});
@@ -85,65 +87,67 @@ router.get('/mget_entry/:device_id/:id', async (req, res) => {
     qid = "mget_entry" + device_id + Date.now()
     client = new kafka.KafkaClient()
     await prod(client, device_id, prop, info, query, updateKey, qid)
-    get_data(100, device_id, qid).then((result) => {
+    get_data(1000, device_id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
         res.status(500).send({msg: "Ruh roh"});
     })
 })
 
-router.put('/mmodify_obj/:key', async (req, res) => {
-    const updateKey = req.params.key
+//edit
+router.put('/mmodify_obj/:device_id/:id', async (req, res) => {
+    const updateKey = req.params.id
     const data = req.body
-    const id = updateKey
+    const id = req.params.device_id
+    prop = data.prop
+    info = data.info
+    query = data.query
+    qid = "mmodify_obj" + id + Date.now()
+    client = new kafka.KafkaClient()
+    await prod(client, id, prop, info, query, updateKey, qid)
+    const sol = await consom(client)
+    get_data(1000, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
+})
+
+//edit
+router.put('/mmodify_metaobj/:device_id/:id', async (req, res) => {
+    const updateKey = req.params.id
+    const data = req.body
+    const id = req.params.device_id
     prop = data.prop
     info = data.info
     query = data.query
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey)
+    qid = "mmodify_metaobj" + id + Date.now()
+    await prod(client, id, prop, info, query, updateKey, qid)
     const sol = await consom(client)
-    const result = await addSieveLogs("admin", id, JSON.stringify({ prop: "id", info: id, query: "mget_entry" }))
-    if (result) {
-        res.status(200).send({ message: sol.msg, data: sol.data })
-    } else {
-        res.status(500).send({ message: "Unable to perform request at this time" })
-    }
+    get_data(1000, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
 })
 
-router.put('/mmodify_metaobj/:key', async (req, res) => {
-    const updateKey = req.params.key
-    const data = req.body
-    const id = updateKey
-    prop = data.prop
-    info = data.info
-    query = data.query
-    client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey)
-    const sol = await consom(client)
-    const result = addSieveLogs("admin", id, JSON.stringify({ prop: "id", info: id, query: "mget_entry" }))
-    if (result) {
-        res.status(200).send({ message: sol.msg, data: sol.data })
-    } else {
-        res.status(500).send({ message: "Unable to perform request at this time" })
-    }
-})
-
-router.delete('/mdelete_obj/:key', async (req, res) => {
-    const updateKey = req.params.key
-    const id = updateKey
+// edit
+router.delete('/mdelete_obj/:device_id/:id', async (req, res) => {
+    const updateKey = req.params.id
+    const id = req.params.device_id
     prop = ''
     info = ''
     query = 'mdelete_obj'
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey)
+    qid = "mdelete_obj" + id + Date.now()
+    await prod(client, id, prop, info, query, updateKey, qid)
     const sol = await consom(client)
-    console.log(sol)
-    const result = addSieveLogs("admin", id, JSON.stringify({ prop: "id", info: id, query: "mget_entry" }))
-    if (sol.msg == 'Succ') {
-        res.status(200).send({ message: sol.msg, data: sol.data })
-    } else {
-        res.status(500).send({ message: "Unable to perform request at this time" })
-    }
+    get_data(1000, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
 
 
 })
