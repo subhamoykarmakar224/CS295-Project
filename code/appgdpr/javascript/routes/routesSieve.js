@@ -4,7 +4,7 @@ const {
     addSieveLogs
 } = require('../utils/UtilsData')
 const { prod } = require('../kafkaSieve/sieveProduce')
-const { consom } = require('../kafkaSieve/sieveConsume')
+// const { consom } = require('../kafkaSieve/sieveConsume')
 const kafka = require('kafka-node')
 
 const buff = []
@@ -13,8 +13,7 @@ const get_data = function (limit, uid, qid, callback) {
     var i = 0
     return new Promise(function (resolve, reject) {
         var get_data = setInterval(function () {
-            console.log('Loop: ' + i);
-            // console.log(buff.length)
+            // console.log('Loop: ' + i);
             var result = {}
             if (i === limit - 1) {
                 clearInterval(get_data)
@@ -86,6 +85,7 @@ router.get('/mget_entry/:device_id/:id', async (req, res) => {
     updateKey = ""
     qid = "mget_entry" + device_id + Date.now()
     client = new kafka.KafkaClient()
+    console.log(device_id, prop, info, query, updateKey, qid)
     await prod(client, device_id, prop, info, query, updateKey, qid)
     get_data(1000, device_id, qid).then((result) => {
         res.status(200).send(result)
@@ -101,11 +101,11 @@ router.put('/mmodify_obj/:device_id/:id', async (req, res) => {
     const id = req.params.device_id
     prop = data.prop
     info = data.info
-    query = data.query
+    query = "mmodify_obj"
     qid = "mmodify_obj" + id + Date.now()
     client = new kafka.KafkaClient()
+    console.log(id, prop, info, query, updateKey, qid)
     await prod(client, id, prop, info, query, updateKey, qid)
-    const sol = await consom(client)
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
@@ -120,11 +120,10 @@ router.put('/mmodify_metaobj/:device_id/:id', async (req, res) => {
     const id = req.params.device_id
     prop = data.prop
     info = data.info
-    query = data.query
+    query = "mmodify_metaobj"
     client = new kafka.KafkaClient()
     qid = "mmodify_metaobj" + id + Date.now()
     await prod(client, id, prop, info, query, updateKey, qid)
-    const sol = await consom(client)
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
@@ -142,7 +141,6 @@ router.delete('/mdelete_obj/:device_id/:id', async (req, res) => {
     client = new kafka.KafkaClient()
     qid = "mdelete_obj" + id + Date.now()
     await prod(client, id, prop, info, query, updateKey, qid)
-    const sol = await consom(client)
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
