@@ -86,12 +86,34 @@ router.post('/madd_obj/:device_id', async (req, res) => {
     qid = query + id + Date.now()
     updateKey = ""
     const mallData = data.mallData
+    const reformatMallData = {
+        id: mallData.id,
+        shop_name: mallData.shopName,
+        obs_date: mallData.obsDate,
+        obs_time: mallData.obsTime,
+        user_interest: mallData.userInterest,
+        device_id: mallData.deviceID
+    }
     const metaData = data.metaData
+    const reformattedMetaData = {
+        id: metaData.id,
+        querier: metaData.querier,
+        purpose: metaData.purpose,
+        ttl: metaData.ttl,
+        origin: metaData.origin,
+        objection: metaData.objection,
+        sharing: metaData.sharing,
+        key: metaData.key,
+        policy_id: metaData.policyID,
+        enforcement_action: metaData.enforcementAction,
+        inserted_at: metaData.insertedAt,
+        device_id: metaData.deviceID
+    }
     client = new kafka.KafkaClient()
-    await prod(client, id, prop, info, query, updateKey, '', mallData, metaData, qid)
+    await prod(client, id, prop, info, query, updateKey, '', reformatMallData, reformattedMetaData, qid)
     // const sol = await consom(client)
     get_data(1000, id, qid).then((result) => {
-        res.status(200).send(result)
+        res.status(201).send(result)
     }).catch(() => {
         res.status(500).send({msg: "Ruh roh"});
     })
