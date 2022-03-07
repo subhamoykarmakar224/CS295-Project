@@ -22,7 +22,8 @@ const get_data = function (limit, uid, qid, callback) {
             for (var j = 0; j < buff.length; j++) {
                 if (buff[j].uid == uid && buff[j].qid == qid) {
                     result = {
-                        'result': buff[j].mallData,
+                        'mallData': buff[j].mallData,
+                        'metaData': buff[j].metaData,
                         'timestamp': buff[j].timestamp
                     }
                     buff.splice(j, 1)
@@ -94,7 +95,6 @@ router.get('/mget_entry/:device_id/:id', async (req, res) => {
     })
 })
 
-//edit
 router.put('/mmodify_obj/:device_id/:id', async (req, res) => {
     const updateKey = req.params.id
     const data = req.body
@@ -113,7 +113,6 @@ router.put('/mmodify_obj/:device_id/:id', async (req, res) => {
     })
 })
 
-//edit
 router.put('/mmodify_metaobj/:device_id/:id', async (req, res) => {
     const updateKey = req.params.id
     const data = req.body
@@ -148,6 +147,38 @@ router.delete('/mdelete_obj/:device_id/:id', async (req, res) => {
     })
 
 
+})
+
+router.get('/mget_objUSR/:device_id', async (req, res) => {
+    const id = req.params.device_id
+    const updateKey = ""
+    prop = ''
+    info = ''
+    query = 'mget_objUSR'
+    client = new kafka.KafkaClient()
+    qid = query + id + Date.now()
+    await prod(client, id, prop, info, query, updateKey, qid)
+    get_data(1000, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
+})
+
+router.get('/mget_metaEntry/:device_id/:id', async (req, res) => {
+    const updateKey = req.params.id
+    const id = req.params.device_id
+    prop = ''
+    info = ''
+    query = 'mget_metaEntry'
+    client = new kafka.KafkaClient()
+    qid = "mget_metaEntry" + id + Date.now()
+    await prod(client, id, prop, info, query, updateKey, qid)
+    get_data(1000, id, qid).then((result) => {
+        res.status(200).send(result)
+    }).catch(() => {
+        res.status(500).send({msg: "Ruh roh"});
+    })
 })
 
 module.exports = router
