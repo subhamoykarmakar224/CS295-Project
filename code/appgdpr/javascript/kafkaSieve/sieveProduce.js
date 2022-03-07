@@ -2,7 +2,7 @@ var kafka = require('kafka-node')
 
 
 
-const prod = async (client, id, prop, info, query, updateKey, qid) => {
+const prod = async (client, id, prop, info, query, updateKey, mallData, metaData, qid) => {
     Producer = kafka.Producer
     producer = new Producer(client)
     qr = {
@@ -11,6 +11,8 @@ const prod = async (client, id, prop, info, query, updateKey, qid) => {
         info: info,
         query: query,
         updateKey: updateKey,
+        mallData: mallData,
+        metaData: metaData,
         qid: qid
     }
     payloads = [
