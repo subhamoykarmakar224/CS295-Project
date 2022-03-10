@@ -45,9 +45,9 @@ const syncLogs = async () => {
         var count = await getCountLogs()
         console.log('countin sync log: ', count)
         // while (count !== 0) {
-            await insertLog()
-            count = await getCountLogs()
-            console.log('countin whilesync log: ', count)
+        await insertLog()
+        count = await getCountLogs()
+        console.log('countin whilesync log: ', count)
         // }
     }, 10000)
     

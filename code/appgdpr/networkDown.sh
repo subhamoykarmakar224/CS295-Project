@@ -10,3 +10,6 @@ popd
 
 # clean out any old identites in the wallets
 rm -rf javascript/wallet/*
+
+#clean database
+rm -rf javascript/dblogs/*
