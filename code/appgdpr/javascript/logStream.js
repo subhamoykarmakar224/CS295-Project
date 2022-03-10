@@ -3,8 +3,14 @@ Consumer = kafka.Consumer
 const {
     addSieveLogs
 } = require('./utils/UtilsData')
+const {storeLogs} = require('./db')
 
+function freeze(time) {
+    const stop = new Date().getTime() + time;
+    while(new Date().getTime() < stop);       
+}
 const consom = async (client) => {
+    var counter = 0
     Consumer = kafka.Consumer,
     client = new kafka.KafkaClient(),
     consumer = new Consumer(
@@ -20,12 +26,18 @@ const consom = async (client) => {
     consumer.on('message', async function (message) {
         const logM = JSON.parse(message.value);
         console.log(logM)
-        const result = await addSieveLogs("admin", logM.querier, logM.log)
-        if(result.success) {
-            console.log('yay')
-        } else {
-            console.log('nay')
-        }
+        counter = counter + 1
+        // console.log("freeze 3s");
+        // freeze(3000);
+        // console.log("done");
+        await storeLogs(logM.querier, logM.log)
+        // console.log('out of await')
+        // if(result.success) {
+        //     console.log('yay')
+        //     console.log(counter)
+        // } else {
+        //     console.log('nay')
+        // }
     });
     // const sol = {}
     // consumerPromise.then((data) => {
