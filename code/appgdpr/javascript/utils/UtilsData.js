@@ -24,17 +24,18 @@ async function addSieveLogs(userName, id, data) {
             // Create a new gateway for connecting to our peer node.
             const gateway = new Gateway();
             await gateway.connect(ccp, { wallet, identity: userName, discovery: { enabled: true, asLocalhost: true } });
-    
+            console.log('connected')
             // Get the network (channel) our contract is deployed to.
             const network = await gateway.getNetwork('mychannel');
-    
+            console.log('networked')
             // Get the contract from the network.
             const contract = network.getContract('fabcar');
-    
+            console.log('contracted')
             // Submit the specified transaction.
-            await contract.submitTransaction('createSieveLogs', userName, id, data);
+            await contract.submitTransaction('createSieveLogs', userName, id, data).then(() => console.log('submitted'))
+            .catch(error => reject({'error': `${error}`}));
             
-    
+            console.log('tried')
             // Disconnect from the gateway.
             gateway.disconnect()
             resolve({'success': 'Logs have been added.'})

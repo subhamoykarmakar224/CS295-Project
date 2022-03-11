@@ -16,6 +16,16 @@ CC_SRC_PATH="../chaincode/fabcar/javascript/"
 # clean out any old identites in the wallets
 rm -rf javascript/wallet/*
 
+#clear database
+sudo -u postgres psql -c 'drop database IF EXISTS sieve'
+sudo -u postgres psql -c 'create database sieve'
+sudo -u postgres psql -c 'GRANT ALL PRIVILEGES ON DATABASE sieve TO sieve'
+sudo -u postgres psql -d sieve -c '\i /home/farquad/Documents/gdprsearch/sieve/data/mall_data10kCompleteSieve.sql '
+
+# add logResults channel on kafka
+$HOME/Documents/kafka_2.13-3.1.0/bin/kafka-topics.sh --create --topic logResults --bootstrap-server localhost:9092
+
+
 # launch network; create channel and join peer to channel
 pushd ../test-network
 ./network.sh down

@@ -11,5 +11,8 @@ popd
 # clean out any old identites in the wallets
 rm -rf javascript/wallet/*
 
+
+
 #clean database
 rm -rf javascript/dblogs/*
+sudo -u postgres psql -c 'drop database IF EXISTS sieve'

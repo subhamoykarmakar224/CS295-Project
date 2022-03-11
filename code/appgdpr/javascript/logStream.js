@@ -4,6 +4,7 @@ const {
     addSieveLogs
 } = require('./utils/UtilsData')
 const {storeLogs} = require('./db')
+const { countLogs, insertLog } = require('./db')
 
 function freeze(time) {
     const stop = new Date().getTime() + time;
@@ -25,7 +26,7 @@ const consom = async (client) => {
     console.log('listening to logResults')
     consumer.on('message', async function (message) {
         const logM = JSON.parse(message.value);
-        console.log(logM)
+        // console.log(logM)
         counter = counter + 1
         // console.log("freeze 3s");
         // freeze(3000);
@@ -39,18 +40,44 @@ const consom = async (client) => {
         //     console.log('nay')
         // }
     });
-    // const sol = {}
-    // consumerPromise.then((data) => {
-    //     sol.data = data.md
-    //     sol.msg = data.message
-    // })
-    // const consoomClose = new Promise((resolve, reject) => {
-    //     consumer.close(true, () => resolve("done okchamp"))
-
-    // })
-    // await consoomClose
-    // consoomClose.then((str) => console.log(str))
-    // return sol
 }
-client = new kafka.KafkaClient()
-consom(client)
+
+
+const getCountLogs = async () => {
+    var cnt = new Promise(function (resolve, reject) {
+        countLogs(resolve, reject)
+    })
+    await cnt
+    var count = 0
+    await cnt.then(res => {
+        // console.log('res in getcount server', res)
+        count = res
+    })
+    // console.log('count in server function: ', count)
+    return count
+}
+
+const syncLogs = async () => { 
+    console.log('called')
+    var s = setInterval(async () => {
+        var count = await getCountLogs()
+        console.log('countin sync log: ', count)
+        // while (count !== 0) {
+        if (count !== 0) {
+            await insertLog()
+        }
+        count = await getCountLogs()
+        console.log('countin whilesync log: ', count)
+        // }
+    }, 5000)
+    
+}
+
+const main = async () => {
+    client = new kafka.KafkaClient()
+    consom(client)
+    console.log('sync')
+    syncLogs()
+}
+
+main()

@@ -23,7 +23,7 @@ app.listen(5344, async () => {
     console.log('Enroll Admin!')
     res = await registerDefaultAdmin()
     console.log(res)
-    syncLogs()
+    // syncLogs()
 })
 
 const getCountLogs = async () => {
@@ -35,6 +35,9 @@ const getCountLogs = async () => {
     await cnt.then(res => {
         // console.log('res in getcount server', res)
         count = res
+    }).catch((e) => {
+        console.log(e)
+        return 0
     })
     // console.log('count in server function: ', count)
     return count

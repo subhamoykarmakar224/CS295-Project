@@ -10,8 +10,8 @@ function storeLogs(id, log) {
 
         // var stmt = db.prepare("INSERT INTO logs (?, ?)");
         // stmt.run(id, log);
-        console.log(id, log)
-        console.log('inside storelogs')
+        // console.log(id, log)
+        // console.log('inside storelogs')
         db.run(`INSERT INTO logs(id, log) VALUES(?, ?)`, [id, log])
     })
 }
@@ -47,43 +47,27 @@ function freeze(time) {
     while (new Date().getTime() < stop);
 }
 
-const performInsert = async (resolve, reject, row) => {
-    addSieveLogs("admin", row.id, row.log).then((body) => {
+const performInsert = async (row) => {
+    await addSieveLogs("admin", row.id, row.log).then((body) => {
         console.log("YEYEYEYEEYE")
-        resolve(body)
-    }).catch((body) => reject(body))
+        db.run("DELETE from logs where sqn in (" + row.sqn + ")")
+    }).catch((body) => console.log(body))
 }
 
 const insertLog = async () => {
 
     // const res = new Promise(async (resolve, reject) => {
-    const resList = []
-    db.each("SELECT * FROM logs order by time limit 100", async (err, row) => {
+    var resList = []
+    db.each("SELECT * FROM logs order by time limit 25", async (err, row) => {
         // console.log(row.id, row.log)
-        const sol = new Promise(async (resolve, reject) => {
-            // console.log(row)
-            // console.log("freeze 3s");
-            // freeze(3000);
-            // console.log("done");
-            const prom = new Promise(async (resolve, reject) => {
-                performInsert(resolve, reject, row)
-            })
-            
-            await prom
-            console.log('if yeeyeyeye prints after then this doesnt work')
-            console.log(row.sqn)
-            prom.then((body) => {
-                resList.push(row.sqn)
-                resolve(body)
-            }).catch((body) => {
-                console.log('WHY WHY WHY WHY WHY')
-                console.log(body)
-                reject(body)
-            })
+        resList.push(row)
+    }, () => {
+        resList.forEach(performInsert)
+    })
+    // console.log("DELETE from logs where sqn in (" + resList.join(", ") + ")")
+    // db.run("DELETE from logs where sqn in (" + resList.join(", ") + ")")
+    resList = []
 
-        })
-        await sol
-    }, () => { db.run("DELETE from logs where sqn in (" + resList.join(", ") + ")") })
     // console.log(resList)
     // resolve(resList)
     // })
