@@ -57,17 +57,15 @@ const performInsert = async (row) => {
 const insertLog = async () => {
 
     // const res = new Promise(async (resolve, reject) => {
-    var resList = []
-    db.each("SELECT * FROM logs order by time limit 25", async (err, row) => {
+    var entry
+    db.each("SELECT * FROM logs order by time limit 1", async (err, row) => {
         // console.log(row.id, row.log)
-        resList.push(row)
-    }, () => {
-        resList.forEach(performInsert)
+        entry = row
+    }, async () => {
+        await performInsert(entry)
     })
     // console.log("DELETE from logs where sqn in (" + resList.join(", ") + ")")
     // db.run("DELETE from logs where sqn in (" + resList.join(", ") + ")")
-    resList = []
-
     // console.log(resList)
     // resolve(resList)
     // })

@@ -31,7 +31,7 @@ const consom = async (client) => {
         // console.log("freeze 3s");
         // freeze(3000);
         // console.log("done");
-        await storeLogs(logM.querier, logM.log)
+        storeLogs(logM.querier, logM.log)
         // console.log('out of await')
         // if(result.success) {
         //     console.log('yay')
@@ -69,7 +69,7 @@ const syncLogs = async () => {
         count = await getCountLogs()
         console.log('countin whilesync log: ', count)
         // }
-    }, 5000)
+    }, 2000)
     
 }
 
