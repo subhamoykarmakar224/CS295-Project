@@ -3,7 +3,7 @@ var db = new sqlite3.Database('./dblogs/dblogs.db');
 const {
     addSieveLogs
 } = require('./utils/UtilsData')
-function storeLogs(id, log) {
+const storeLogs = async (id, log) => {
     db.serialize(function () {
         // db.run("CREATE TABLE lorem (info TEXT)");
         db.run("CREATE TABLE if not exists logs (sqn INTEGER PRIMARY KEY autoincrement, id TEXT, log TEXT, time TIMESTAMP default current_timestamp)")
@@ -47,22 +47,26 @@ function freeze(time) {
     while (new Date().getTime() < stop);
 }
 
-const performInsert = async (row) => {
-    await addSieveLogs("admin", row.id, row.log).then((body) => {
+const performInsert = async (entries) => {
+    await addSieveLogs("admin", entries).then((body) => { //row.id, row.log
         console.log("YEYEYEYEEYE")
-        db.run("DELETE from logs where sqn in (" + row.sqn + ")")
+        const sqnList = []
+        for (let i = 0; i < entries.length; i++) {
+            sqnList.push(entries[i].sqn)
+        }
+        db.run("DELETE from logs where sqn in (" + sqnList.join(", ") + ")")
     }).catch((body) => console.log(body))
 }
 
 const insertLog = async () => {
 
     // const res = new Promise(async (resolve, reject) => {
-    var entry
-    db.each("SELECT * FROM logs order by time limit 1", async (err, row) => {
+    var entries = []
+    db.each("SELECT * FROM logs order by time limit 100", async (err, row) => {
         // console.log(row.id, row.log)
-        entry = row
+        entries.push(row)
     }, async () => {
-        await performInsert(entry)
+        await performInsert(entries)
     })
     // console.log("DELETE from logs where sqn in (" + resList.join(", ") + ")")
     // db.run("DELETE from logs where sqn in (" + resList.join(", ") + ")")

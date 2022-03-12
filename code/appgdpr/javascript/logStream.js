@@ -11,7 +11,7 @@ function freeze(time) {
     while(new Date().getTime() < stop);       
 }
 const consom = async (client) => {
-    var counter = 0
+    // var counter = 0
     Consumer = kafka.Consumer,
     client = new kafka.KafkaClient(),
     consumer = new Consumer(
@@ -27,11 +27,12 @@ const consom = async (client) => {
     consumer.on('message', async function (message) {
         const logM = JSON.parse(message.value);
         // console.log(logM)
-        counter = counter + 1
+        // counter = counter + 1
+        // console.log('counter: ', counter)
         // console.log("freeze 3s");
         // freeze(3000);
         // console.log("done");
-        storeLogs(logM.querier, logM.log)
+        await storeLogs(logM.querier, logM.log)
         // console.log('out of await')
         // if(result.success) {
         //     console.log('yay')

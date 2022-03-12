@@ -24,7 +24,8 @@ const get_data = function (limit, uid, qid, callback) {
                     result = {
                         'mallData': buff[j].mallData,
                         'metaData': buff[j].metaData,
-                        'timestamp': buff[j].timestamp
+                        'timestamp': buff[j].timestamp,
+                        'qid': buff[j].qid
                     }
                     buff.splice(j, 1)
                     clearInterval(get_data)
@@ -115,6 +116,7 @@ router.post('/madd_obj/:device_id', async (req, res) => {
     get_data(1000, id, qid).then((result) => {
         res.status(201).send(result)
     }).catch(() => {
+        console.log('epic fail in madd_obj')
         res.status(500).send({msg: "Ruh roh"});
     })
 })
@@ -185,6 +187,7 @@ router.put('/mmodify_metaController', async (req, res) => {
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
+        console.log('epic fail in mmodify_metaController')
         res.status(500).send({msg: "Ruh roh"});
     })
 })
@@ -202,6 +205,7 @@ router.delete('/mdelete_obj/:device_id/:id', async (req, res) => {
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
+        console.log('epic fail in mdelete_obj')
         res.status(500).send({msg: "Ruh roh"});
     })
 

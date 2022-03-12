@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 
-async function addSieveLogs(userName, id, data) {
+async function addSieveLogs(userName, data) {
     return new Promise(async (resolve, reject) => {
         try {
             // load the network configuration
@@ -32,7 +32,7 @@ async function addSieveLogs(userName, id, data) {
             const contract = network.getContract('fabcar');
             console.log('contracted')
             // Submit the specified transaction.
-            await contract.submitTransaction('createSieveLogs', userName, id, data).then(() => console.log('submitted'))
+            await contract.submitTransaction('createSieveLogs', userName, JSON.stringify(data)).then(() => console.log('submitted'))
             .catch(error => reject({'error': `${error}`}));
             
             console.log('tried')

@@ -52,16 +52,19 @@ class FabCar extends Contract {
     }
 
     // ============== SIEVE LOGS ==============
-    async createSieveLogs(ctx, user, r_id, log_data) {
-        const log = {
-            id: r_id, 
-            owner: user.toLowerCase(),
-            docType: 'sieve_log',
-            data: log_data
+    async createSieveLogs(ctx, user, log_entries) {
+        log_entries = JSON.parse(log_entries)
+        for (let i = 0; i < log_entries.length; i++) {
+            const log = {
+                id: log_entries[i].id, 
+                owner: user.toLowerCase(),
+                docType: 'sieve_log',
+                data: log_entries[i].log
+            }
+            const parsed = JSON.parse(log_entries[i].log)
+            const key = parsed.qid
+            await ctx.stub.putState(key, Buffer.from(JSON.stringify(log)));
         }
-        const parsed = JSON.parse(log_data)
-        const key = parsed.qid
-        await ctx.stub.putState(key, Buffer.from(JSON.stringify(log)));
     }
 
     // async querySieveLogsByUser(ctx, user, pageSize, bookmark) {
