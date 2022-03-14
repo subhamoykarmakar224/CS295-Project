@@ -5,8 +5,8 @@ const routesData = require('./routes/routesData')
 const routesSieve = require('./routes/routesSieve')
 const { registerDefaultAdmin } = require('./utils/UtilsAdmin')
 const { countLogs, insertLog } = require('./db')
-
-
+const cors = require('cors')
+app.use(cors())
 app.use(express.json())
 
 // ========= ADMIN =========
