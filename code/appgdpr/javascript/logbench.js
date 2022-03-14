@@ -2,7 +2,7 @@ var axios = require("axios");
 
 const buff = []
 var result = 0
-const number = 10
+const number = 100
 
 const sendRequest = async () => {
     try{
@@ -57,17 +57,21 @@ const getLogs = async (number) => {
     console.log('getlogs called')
     let counter = 0
     var s = setInterval(async () => {
-        if (counter === number) {
+        if (counter === number || buff.length === 0) {
             console.log('found!')
             console.log('result is: ', result)
             clearInterval(s)
         }
 
         const res = await axios.get('http://localhost:5344/log/all/admin')
+        console.log('res got')
+        console.log(buff.length)
         if (res.status === 200) {
             const deleteBuff = []
             for (let i = 0; i < res.data.length; i++) {
+                // console.log("res.data: ", res.data[i].Key)
                 for (let j = 0; j < buff.length; j++) {
+                    // console.log("buffj: ", buff[j].qid)
                     if (res.data[i].Key === buff[j].qid) {
                         const time = new Date().valueOf() - buff[j].startTime
                         result = result + time
@@ -81,7 +85,7 @@ const getLogs = async (number) => {
                     buff.splice(deleteBuff[a], 1)
                 }
             }
-            if (counter === number) {
+            if (counter === number || buff.length === 0) {
                 console.log('found!')
                 console.log('result is: ', result)
                 clearInterval(s)
@@ -92,7 +96,7 @@ const getLogs = async (number) => {
 }
 
 const main = async () => {
-    doRequests(number)
+    await doRequests(number)
     getLogs(number)
 
 
