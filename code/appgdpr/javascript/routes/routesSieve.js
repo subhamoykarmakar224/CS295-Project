@@ -74,6 +74,7 @@ router.post("/mget_obj", async (req, res) => {
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
+        console.log("NONONO")
         res.status(500).send({msg: "Ruh roh"});
     })
 })

@@ -16,30 +16,6 @@ class FabCar extends Contract {
                 owner: "subhamoy",
                 docType: 'sieve_log',
                 data: "test-1"
-            },
-            {
-                id:"",
-                owner: "subhamoy",
-                docType: 'sieve_log',
-                data: "test-2"
-            },
-            {
-                id:"",
-                owner: "subhamoy",
-                docType: 'sieve_log',
-                data: "test-3"
-            },
-            {
-                id:"",
-                owner: "subhamoy",
-                docType: 'sieve_log',
-                data: "test-4"
-            },
-            {
-                id:"",
-                owner: "subhamoy",
-                docType: 'sieve_log',
-                data: "test-5"
             }
         ]
         for (let i = 0; i < logs.length; i++) {

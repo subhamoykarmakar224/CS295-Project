@@ -2,10 +2,11 @@ var axios = require("axios");
 
 const buff = []
 var result = 0
-const number = 1
+const number = 10
 
 const sendRequest = async () => {
     try{
+        console.log('send request called')
         var data = JSON.stringify({
             "id": "6",
             "prop": "purpose",
@@ -20,17 +21,17 @@ const sendRequest = async () => {
             },
             data : data
           };
-          console.log('here')
-          axios(config)
+          await axios(config)
           .then(function (res) {
             console.log('res: ', res.status)
             if (res.status === 200) {
+                console.log(res.data.qid)
                 buff.push({
                     qid: res.data.qid,
                     startTime: new Date().valueOf() 
                 })
             }
-            console.log(buff)
+            // console.log(buff)
           })
           .catch(function (error) {
             console.log(error);
@@ -47,17 +48,18 @@ const sendRequest = async () => {
 
 const doRequests = async (number) => {
     for (let i = 0; i < number; i++) {
+        console.log(i)
         await sendRequest()
     }
 }
 
 const getLogs = async (number) => {
+    console.log('getlogs called')
     let counter = 0
-    console.log('ing etlogs')
     var s = setInterval(async () => {
         if (counter === number) {
             console.log('found!')
-            console.log(result)
+            console.log('result is: ', result)
             clearInterval(s)
         }
 
@@ -71,6 +73,7 @@ const getLogs = async (number) => {
                         result = result + time
                         deleteBuff.push(j)
                         counter = counter + 1
+                        console.log('found')
                     }
                 }
                 // delete after we cleared the buffer for an item
@@ -78,10 +81,14 @@ const getLogs = async (number) => {
                     buff.splice(deleteBuff[a], 1)
                 }
             }
+            if (counter === number) {
+                console.log('found!')
+                console.log('result is: ', result)
+                clearInterval(s)
+            }
         }
     }, 
-    100)
-    console.log(result)
+    1000)
 }
 
 const main = async () => {

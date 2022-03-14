@@ -26,6 +26,7 @@ const consom = async (client) => {
     console.log('listening to logResults')
     consumer.on('message', async function (message) {
         const logM = JSON.parse(message.value);
+        console.log(message.value)
         // console.log(logM)
         // counter = counter + 1
         // console.log('counter: ', counter)
