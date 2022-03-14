@@ -131,11 +131,11 @@ router.get('/mget_entry/:device_id/:id', async (req, res) => {
     updateKey = ""
     qid = "mget_entry" + device_id + Date.now()
     client = new kafka.KafkaClient()
-    console.log(device_id, prop, info, query, updateKey, qid)
     await prod(client, device_id, prop, info, query, updateKey, '', null, null, qid)
     get_data(1000, device_id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
+        console.log('mgetnetry timeout')
         res.status(500).send({msg: "Ruh roh"});
     })
 })
@@ -149,11 +149,12 @@ router.put('/mmodify_obj/:device_id/:id', async (req, res) => {
     query = "mmodify_obj"
     qid = "mmodify_obj" + id + Date.now()
     client = new kafka.KafkaClient()
-    console.log(id, prop, info, query, updateKey, '', null, null, qid)
-    await prod(client, id, prop, info, query, updateKey, qid)
+    // console.log(id, prop, info, query, updateKey, '', null, null, qid)
+    await prod(client, id, prop, info, query, updateKey, '', null, null, qid)
     get_data(1000, id, qid).then((result) => {
         res.status(200).send(result)
     }).catch(() => {
+        console.log('timeout')
         res.status(500).send({msg: "Ruh roh"});
     })
 })
