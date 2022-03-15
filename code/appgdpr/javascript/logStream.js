@@ -71,7 +71,7 @@ const syncLogs = async () => {
         count = await getCountLogs()
         console.log('countin whilesync log: ', count)
         // }
-    }, 2000)
+    }, 1500)
     
 }
 
