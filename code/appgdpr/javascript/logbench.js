@@ -2,7 +2,7 @@ var axios = require("axios");
 
 const buff = []
 var result = 0
-const numberofentries = 100
+const numberofentries = 1000
 let counter = 0
 const sendRequest = async () => {
     try {
