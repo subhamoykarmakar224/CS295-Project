@@ -4,9 +4,10 @@ const buff = []
 var result = 0
 const numberofentries = 1000
 let counter = 0
+let printOnce = false
 const sendRequest = async () => {
     try {
-        console.log('send request called')
+        // console.log('send request called')
         var data = JSON.stringify({
             "id": "6",
             "prop": "purpose",
@@ -23,9 +24,9 @@ const sendRequest = async () => {
         };
         await axios(config)
             .then(function (res) {
-                console.log('res: ', res.status)
+                // console.log('res: ', res.status)
                 if (res.status === 200) {
-                    console.log(res.data.qid)
+                    // console.log(res.data.qid)
                     buff.push({
                         qid: res.data.qid,
                         startTime: new Date().valueOf()
@@ -33,13 +34,13 @@ const sendRequest = async () => {
                 }
             })
             .catch(function (error) {
-                console.log(error);
+                console.log('error: ', error);
             });
 
 
 
     } catch (err) {
-        console.log(err)
+        console.log('error: ',err)
     }
 
 
@@ -47,14 +48,14 @@ const sendRequest = async () => {
 
 const doRequests = async (numberofentries) => {
     for (let i = 0; i < numberofentries; i++) {
-        console.log(i)
+        // console.log(i)
         await sendRequest()
     }
 }
 
-const getLogs = async (numberofentries) => {
+const getLogs = async (numberofentries, startTime) => {
     return new Promise(async (resolve) => {
-        console.log('getlogs called')
+        // console.log('getlogs called')
         var s = setInterval(async () => {
             if (counter === numberofentries) {
                 console.log('found!')
@@ -64,11 +65,10 @@ const getLogs = async (numberofentries) => {
             }
 
             const res = await axios.get('http://localhost:5344/log/all/admin')
-            console.log('res got')
-            console.log(buff.length)
-            console.log('counter, number: ', counter, numberofentries)
+            // console.log('res got')
+            // console.log(buff.length)
+            // console.log('counter, number: ', counter, numberofentries)
             if (res.status === 200) {
-                
                 for (let i = 0; i < res.data.length; i++) {
                     const deleteBuff = []
                     // console.log('i: ', i)
@@ -76,19 +76,28 @@ const getLogs = async (numberofentries) => {
                     for (let j = 0; j < buff.length; j++) {
                         // console.log("buffj: ", buff[j].qid)
                         if (res.data[i].Key === buff[j].qid) {
-                            console.log("God make this code work please")
+                            // console.log("God make this code work please")
                             const time = new Date().valueOf() - buff[j].startTime
                             result = result + time
                             deleteBuff.push(j)
-                            console.log('len: ', deleteBuff.length)
+                            // console.log('len: ', deleteBuff.length)
                             counter++
-                            console.log('found')
+                            if (counter % 100 === 0) {
+                                printOnce = true
+                            }
+                            // console.log('found')
+                        }
+
+                        if (printOnce) {
+                            console.log(counter, new Date().valueOf() - startTime)
+                            console.log("time it takes: ")
+                            console.log(new Date().valueOf() - startTime)
+                            printOnce = false
                         }
                     }
                     // delete after we cleared the buffer for an item
                     for (let a = 0; a < deleteBuff.length; a++) {
-                        console.log('deletebuff')
-                        console.log('d.len', deleteBuff.length)
+                        // console.log('delete  eleteBuff.length)
                         buff.splice(deleteBuff[a], 1)
                     }
                 }
@@ -106,10 +115,10 @@ const getLogs = async (numberofentries) => {
 
 }
 
-const runBench = async () => {
+const runBench = async (startTime) => {
     return new Promise(async (resolve) => {
         doRequests(numberofentries)
-        await getLogs(numberofentries).then(() => {
+        await getLogs(numberofentries, startTime).then(() => {
             console.log('flyin or actually paused? who knows PauseChamp')
             resolve('done')
         })
@@ -120,7 +129,7 @@ const runBench = async () => {
 
 const main = async () => {
     const startTime = new Date().valueOf()
-    const bench = runBench()
+    const bench = runBench(startTime)
     await bench
     console.log('took this time to run : ', new Date().valueOf() - startTime)
 }
