@@ -2,9 +2,10 @@ var axios = require("axios");
 
 const buff = []
 var result = 0
-const numberofentries = 1000
+const numberofentries = 10000
 let counter = 0
 let printOnce = false
+const resultBuff = []
 const sendRequest = async () => {
     try {
         // console.log('send request called')
@@ -57,11 +58,16 @@ const getLogs = async (numberofentries, startTime) => {
     return new Promise(async (resolve) => {
         // console.log('getlogs called')
         var s = setInterval(async () => {
+            if (new Date().valueOf() - startTime > 900000) {
+                console.log("stopped tooo slow")
+                clearInterval(s)
+                resolve(result, resultBuff)
+            }
             if (counter === numberofentries) {
                 console.log('found!')
                 console.log('result is: ', result)
                 clearInterval(s)
-                resolve(result)
+                resolve(result, resultBuff)
             }
 
             const res = await axios.get('http://localhost:5344/log/all/admin')
@@ -89,9 +95,10 @@ const getLogs = async (numberofentries, startTime) => {
                         }
 
                         if (printOnce) {
-                            console.log(counter, new Date().valueOf() - startTime)
+                            const respair = (counter, new Date().valueOf() - startTime)
                             console.log("time it takes: ")
-                            console.log(new Date().valueOf() - startTime)
+                            console.log(respair)
+                            resultBuff.push(respair)
                             printOnce = false
                         }
                     }
@@ -105,7 +112,7 @@ const getLogs = async (numberofentries, startTime) => {
                     console.log('found!')
                     console.log('result is: ', result)
                     clearInterval(s)
-                    resolve(result)
+                    resolve(result, resultBuff)
                 }
             }
         },
@@ -132,6 +139,12 @@ const main = async () => {
     const bench = runBench(startTime)
     await bench
     console.log('took this time to run : ', new Date().valueOf() - startTime)
+    console.log(resultBuff)
+    const times = []
+    for(let i = 0; i < resultBuff.length; i++) {
+        times.push(resultBuff[i])
+    }
+    console.log(times.join(", "))
 }
 
 main()

@@ -62,7 +62,7 @@ const insertLog = async () => {
 
     // const res = new Promise(async (resolve, reject) => {
     var entries = []
-    db.each("SELECT * FROM logs order by time limit 100", async (err, row) => {
+    db.each("SELECT * FROM logs order by time limit 1000", async (err, row) => {
         // console.log(row.id, row.log)
         entries.push(row)
     }, async () => {
