@@ -77,8 +77,8 @@ const syncLogs = async () => {
 const main = async () => {
     client = new kafka.KafkaClient()
     consom(client)
-    console.log('sync')
-    syncLogs()
+    // console.log('sync')
+    // syncLogs()
 }
 
 main()

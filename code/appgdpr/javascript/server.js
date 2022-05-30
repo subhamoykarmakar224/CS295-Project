@@ -20,7 +20,8 @@ app.use('/sieve', routesSieve)
 
 
 app.listen(5344, async () => {
-    console.log('Enroll Admin!')
-    res = await registerDefaultAdmin()
-    console.log(res)
+    console.log('listening on port 5344')
+    // console.log('Enroll Admin!')
+    // res = await registerDefaultAdmin()
+    // console.log(res)
 })
